@@ -1476,7 +1476,7 @@ const game = {
                 reader.onload = (ev) => {
                     const arrayBuff = ev.target.result;
                     audio.ctx.decodeAudioData(arrayBuff).then(buff => {
-                        SongLibrary.addSong(f.name, buff);
+                        SongLibrary.addSong(f.name, buff, f);
                     });
                 };
                 reader.readAsArrayBuffer(f);
