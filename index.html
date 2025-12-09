@@ -2,8 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Rhythm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cyber Rhythm 8</title>
+    
+    <!-- PWA Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Cyber Rhythm 8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="format-detection" content="telephone=no">
+
+    <!-- Embedded Icon (SVG Base64) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojMDAwIj48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI0OTIiIGhlaWdodD0iNDkyIiByeD0iNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBZmYiIHN0cm9rZS13aWR0aD0iMjAiLz48dGV4dCB4PSI1MCUiIHk9IjUyJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTgwIiBmaWxsPSIjMGZmIiBzdHlsZT0idGV4dC1zaGFkb3c6MCAwIDUwcHggIzBmZiI+Q1I4PC90ZXh0Pjwvc3ZnPg==">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBzdHlsZT0iYmFja2dyb3VuZC1jb2xvcjojMDAwIj48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI0OTIiIGhlaWdodD0iNDkyIiByeD0iNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBZmYiIHN0cm9rZS13aWR0aD0iMjAiLz48dGV4dCB4PSI1MCUiIHk9IjUyJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iMTgwIiBmaWxsPSIjMGZmIiBzdHlsZT0idGV4dC1zaGFkb3c6MCAwIDUwcHggIzBmZiI+Q1I4PC90ZXh0Pjwvc3ZnPg==">
+
+    <!-- Embedded Manifest (Data URI) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQ3liZXIgUmh5dGhtIDgiLCJzaG9ydF9uYW1lIjoiQ1I4Iiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDAwMDAiLCJ0aGVtZV9jb2xvciI6IiMwMGZmZmYiLCJvcmllbnRhdGlvbiI6ImxhbmRzY2FwZSJ9">
+
     <!-- JSZip for Zip I/O -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -27,6 +43,9 @@
             font-family: 'Orbitron', sans-serif; touch-action: none;
             user-select: none; -webkit-user-select: none; color: #fff;
             width: 100vw; height: 100vh;
+            /* Disable selection and callouts for iOS */
+            -webkit-touch-callout: none;
+            -webkit-text-size-adjust: none;
         }
         canvas { display: block; width: 100%; height: 100%; }
 
@@ -37,8 +56,16 @@
             align-items: center; justify-content: center; z-index: 100;
             pointer-events: auto; backdrop-filter: blur(5px);
             padding: 2vmin;
+            /* Adjust for notch */
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; }
+        #ui-layer { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            pointer-events: none; display: flex; flex-direction: column; justify-content: space-between;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
 
         h1 { color: #fff; text-shadow: 0 0 10px var(--primary); font-size: 6vmin; margin: 0; line-height: 1; text-align: center; }
         .sub-title { color: var(--secondary); font-size: 2.5vmin; margin-bottom: 2vmin; text-align: center; }
@@ -73,6 +100,7 @@
         }
         .scroll-list {
             flex: 1; overflow-y: auto; padding-right: 0.5vmin;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
         }
 
         /* List Items & Marquee */
@@ -154,6 +182,7 @@
             padding: 1vmin 2vmin; display: flex; justify-content: space-between; align-items: flex-start;
             width: 100%; box-sizing: border-box; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
             height: 18vh; pointer-events: auto;
+            padding-top: max(1vmin, env(safe-area-inset-top));
         }
         .score-val { font-size: 6vmin; color: var(--primary); font-weight: bold; }
         .progress-bar-bg { width: 30vw; height: 1.5vmin; background: #333; border-radius: 1vmin; margin-top: 0.5vmin; }
@@ -185,7 +214,7 @@
         input[type=range] { width: 100%; height: 6vmin; }
         
         /* Touch Zones */
-        #touch-zones { position: absolute; bottom: 0; width: 100%; height: 25vh; display: flex; pointer-events: none; z-index: 5; }
+        #touch-zones { position: absolute; bottom: 0; width: 100%; height: 25vh; display: flex; pointer-events: none; z-index: 5; padding-bottom: env(safe-area-inset-bottom); }
         .zone {
             flex: 1; border-right: 1px solid rgba(255,255,255,0.1); display: flex; align-items: flex-end;
             justify-content: center; padding-bottom: 2vmin; color: rgba(255,255,255,0.3); font-size: 3vmin; font-weight: bold;
@@ -199,8 +228,8 @@
 
         #global-settings-btn {
             position: absolute;
-            bottom: 3vmin;
-            right: 3vmin;
+            bottom: max(3vmin, env(safe-area-inset-bottom));
+            right: max(3vmin, env(safe-area-inset-right));
             margin: 0;
             z-index: 150;
             padding: 1.5vmin 3vmin;
@@ -212,16 +241,20 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; display: none; flex-direction: column; justify-content: space-between;
             z-index: 50;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
         .de-top-bar {
             background: rgba(0,0,0,0.8); width: 100%; padding: 1vmin;
             display: flex; justify-content: space-between; align-items: center; pointer-events: auto;
             border-bottom: 1px solid #333;
+            padding-top: max(1vmin, env(safe-area-inset-top));
         }
         .de-bottom-bar {
             background: rgba(0,10,20,0.95); width: 100%; padding: 1vmin;
             display: flex; flex-direction: column; gap: 1vmin; pointer-events: auto;
             border-top: 1px solid var(--primary);
+            padding-bottom: max(1vmin, env(safe-area-inset-bottom));
         }
         .de-row { display: flex; gap: 2vmin; align-items: center; width: 100%; }
         .de-label { font-size: 2vmin; color: #aaa; white-space: nowrap; }
@@ -239,7 +272,10 @@
         
         /* Test Stop Button */
         #test-stop-btn {
-            position: fixed; top: 2vmin; right: 2vmin; z-index: 200;
+            position: fixed; 
+            top: max(2vmin, env(safe-area-inset-top)); 
+            right: max(2vmin, env(safe-area-inset-right)); 
+            z-index: 200;
             display: none; padding: 1vmin 3vmin; font-size: 3vmin;
             background: rgba(255, 0, 0, 0.8); color: #fff;
             border: 2px solid #fff; border-radius: 8px;
@@ -1091,6 +1127,12 @@ const game = {
             if (Math.abs(dy) > 10) this.editorIsScrolling = true;
             
             if (this.editorIsScrolling) {
+                // Determine time shift. 
+                // dy > 0 (drag down) => should go UP in chart (back in time)
+                // y = jY - (tDiff * speed * zoom)
+                // moving Y changes tDiff.
+                // 1 px = 1 / (speed * zoom) sec
+                
                 const timeShift = dy / (Settings.speed * this.editorZoom);
                 this.editorTime = Math.max(0, Math.min(audio.getDuration(), this.editorScrollStartTime + timeShift));
                 this.updateDetailUI();
